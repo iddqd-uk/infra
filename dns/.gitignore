@@ -1,0 +1,3 @@
+## Auth (file format - `{"cloudflare": {"TYPE": "CLOUDFLAREAPI", "accountid": "...", "apitoken": "..."}}`)
+## More details: https://docs.dnscontrol.org/provider/cloudflareapi
+/creds.json
