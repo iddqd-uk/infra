@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+# docs: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+
+name: 🚀 Deploy the Terraform infrastructure
+
+on:
+  workflow_dispatch: {} # manual trigger only
+
+concurrency:
+  group: ${{ github.ref }}-terraform
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy the Terraform infrastructure
+    runs-on: ubuntu-latest
+    environment: Terraform
+    defaults: {run: {working-directory: ./terraform}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with: {cli_config_credentials_token: "${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}" }
+      - run: terraform init
+      - run: terraform apply -auto-approve
