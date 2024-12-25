@@ -1,5 +1,7 @@
 // @ts-check
-/// <reference path="types-dnscontrol.d.ts" />
+/// <reference path=".types.d.ts" />
+
+var ipv4 = '95.217.4.242', ipv6 = '2a01:4f9:c011:4ae2::1';
 
 D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), DefaultTTL(1),
   // iddqd.uk (cloudflare pages)
@@ -10,24 +12,24 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   AAAA('www', '100::', CF_PROXY_ON),
 
   // consul.iddqd.uk
-  A('consul', '95.217.4.242', CF_PROXY_ON),
-  AAAA('consul', '2a01:4f9:c011:4ae2::1', CF_PROXY_ON),
+  A('consul', ipv4, CF_PROXY_ON),
+  AAAA('consul', ipv6, CF_PROXY_ON),
 
   // nomad.iddqd.uk
-  A('nomad', '95.217.4.242', CF_PROXY_ON),
-  AAAA('nomad', '2a01:4f9:c011:4ae2::1', CF_PROXY_ON),
+  A('nomad', ipv4, CF_PROXY_ON),
+  AAAA('nomad', ipv6, CF_PROXY_ON),
 
   // proxy.iddqd.uk
-  A('proxy', '95.217.4.242', CF_PROXY_ON),
-  AAAA('proxy', '2a01:4f9:c011:4ae2::1', CF_PROXY_ON),
+  A('proxy', ipv4, CF_PROXY_ON),
+  AAAA('proxy', ipv6, CF_PROXY_ON),
 
   // traefik.iddqd.uk
-  A('traefik', '95.217.4.242', CF_PROXY_ON),
-  AAAA('traefik', '2a01:4f9:c011:4ae2::1', CF_PROXY_ON),
+  A('traefik', ipv4, CF_PROXY_ON),
+  AAAA('traefik', ipv6, CF_PROXY_ON),
 
   // ww1.iddqd.uk (http(2080)+tg(443) proxy)
-  A('ww1', '95.217.4.242', TTL(86400)),
-  AAAA('ww1', '2a01:4f9:c011:4ae2::1', TTL(86400)),
+  A('ww1', ipv4, TTL(86400)),
+  AAAA('ww1', ipv6, TTL(86400)),
 
   // blog.iddqd.uk (github pages)
   CNAME('blog', 'tarampampam.github.io.', CF_PROXY_ON),

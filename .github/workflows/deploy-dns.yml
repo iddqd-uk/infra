@@ -4,10 +4,14 @@
 name: 🚀 Deploy the DNS records
 
 on:
-  workflow_dispatch: {}
-  push:
-    branches: [master, main]
-    paths: [dns/dnsconfig.js, .github/workflows/deploy-dns.yml]
+  workflow_dispatch: # manual trigger only
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options: [preview, push]
+        default: push
 
 concurrency:
   group: ${{ github.ref }}-dns
@@ -23,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: gacts/install-dnscontrol@v1
       - run: echo '{"cloudflare":{"TYPE":"CLOUDFLAREAPI","accountid":"$CF_ID","apitoken":"$CF_TOKEN"}}' > ./creds.json
-      - run: dnscontrol push
+      - run: dnscontrol ${{ inputs.action }}
         env:
           CF_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_TOKEN: ${{ secrets.CF_DNS_API_KEY }}
