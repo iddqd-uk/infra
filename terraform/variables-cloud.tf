@@ -1,4 +1,3 @@
-# this file defines all the input variable declarations
 # Terraform Cloud UI to manage variables: https://app.terraform.io/app/iddqd-uk/workspaces/infra/variables
 
 variable "HCLOUD_TOKEN" {
@@ -72,28 +71,44 @@ variable "HTTP_PROXY_PORT" {
   }
 }
 
-variable "SSH_DEPLOY_KEY" { # unused, but kept for reference
-  description = "The private part of the deployment SSH key"
+variable "SSH_K3S_CLUSTER_KEY" {
+  description = "SSH key for accessing the master node from worker nodes"
   type        = string
   sensitive   = true
-}
-
-variable "SSH_DEPLOY_USER" {
-  description = "The user to deploy applications using SSH + Docker"
-  type        = string
 
   validation {
-    condition     = length(var.SSH_DEPLOY_USER) > 0
-    error_message = "Please provide a valid SSH deploy user"
+    condition     = can(var.SSH_K3S_CLUSTER_KEY)
+    error_message = "Please provide a valid SSH key"
   }
 }
 
-variable "SSH_DEPLOY_KEY_PUB" {
-  description = "The public part of the deployment SSH key"
+variable "SSH_K3S_CLUSTER_KEY_PUB" {
+  description = "The public part of the SSH key for accessing the master node from worker nodes"
   type        = string
 
   validation {
-    condition     = can(var.SSH_DEPLOY_KEY_PUB)
+    condition     = can(var.SSH_K3S_CLUSTER_KEY_PUB)
     error_message = "Please provide a valid SSH public key"
+  }
+}
+
+variable "SSH_K3S_CLUSTER_USER" {
+  description = "Username to use for accessing the master node from worker nodes"
+  type        = string
+
+  validation {
+    condition     = length(var.SSH_K3S_CLUSTER_USER) > 0
+    error_message = "Please provide a valid SSH user"
+  }
+}
+
+variable "K3S_TOKEN" {
+  description = "The server token is used to join both server and agent nodes to the cluster"
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = length(var.K3S_TOKEN) > 8
+    error_message = "Please provide a valid K3s token"
   }
 }

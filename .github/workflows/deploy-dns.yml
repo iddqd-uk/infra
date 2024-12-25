@@ -5,7 +5,7 @@ name: 🚀 Deploy the DNS records
 
 on:
   workflow_dispatch: {}
-  push:
+  push: #  TODO: remove this condition
     branches: [master, main]
     paths: [dns/dnsconfig.js, .github/workflows/deploy-dns.yml]
 

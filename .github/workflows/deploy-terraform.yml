@@ -4,7 +4,16 @@
 name: 🚀 Deploy the Terraform infrastructure
 
 on:
-  workflow_dispatch: {} # manual trigger only
+  workflow_dispatch: # manual trigger only
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        options:
+          - &default-action 'apply'
+          - 'plan'
+          - 'destroy'
+        default: *default-action
 
 concurrency:
   group: ${{ github.ref }}-terraform
@@ -21,4 +30,4 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with: {cli_config_credentials_token: "${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}" }
       - run: terraform init
-      - run: terraform apply -auto-approve
+      - run: terraform ${{ inputs.action }} -auto-approve
