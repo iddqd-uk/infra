@@ -21,11 +21,18 @@ GitHub Action.
 The state and variables are managed in [Terraform Cloud][terraform-cloud], eliminating the need to handle the state
 file or secrets manually.
 
+Before deploying the infrastructure, ensure the following resources are available in the Hetzner Cloud:
+
+- A public SSH key (its ID is required for `owner-key-id`)
+- Public IPv4 and IPv6 addresses (`primary-ips.ipv4-id` and `primary-ips.ipv6-id`)
+
+These resources are not managed by Terraform to prevent accidental deletion due to human error.
+
 [terraform-cloud]:https://app.terraform.io/app/iddqd-uk/workspaces/infra/
 
 The following manual actions are required after the infrastructure is created:
 
 ```shell
-# Copy the kubeconfig file to the local machine for cluster access
+# Copy the kubeconfig file to the local machine to access the cluster
 scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ~/k3s.yaml
 ```

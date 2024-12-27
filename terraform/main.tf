@@ -54,6 +54,10 @@ resource "hcloud_server" "kube-master-node" {
     runcmd = [
       # restart the SSH daemon to apply the new configuration
       "systemctl restart sshd",
+      # install cloud network auto-configuration package
+      "curl -SsL https://packages.hetzner.com/hcloud/deb/hc-utils_0.0.6-1_all.deb -o /tmp/hc-utils.deb",
+      "apt install -y /tmp/hc-utils.deb",
+      "rm /tmp/hc-utils.deb",
       # install k3s (https://docs.k3s.io/reference/env-variables)
       join(" ", [ # we need to start the k3s service after the installation to create the token
         "curl -sfL 'https://raw.githubusercontent.com/k3s-io/k3s/refs/tags/${local.k3s.version}/install.sh' | ",
@@ -152,6 +156,10 @@ resource "hcloud_server" "kube-worker-nodes" {
     runcmd = [
       # restart the SSH daemon to apply the new configuration
       "systemctl restart sshd",
+      # install cloud network auto-configuration package
+      "curl -SsL https://packages.hetzner.com/hcloud/deb/hc-utils_0.0.6-1_all.deb -o /tmp/hc-utils.deb",
+      "apt install -y /tmp/hc-utils.deb",
+      "rm /tmp/hc-utils.deb",
       # wait for the master node to be ready
       "until curl -k 'https://${local.ips.master-node.private-ip}:6443'; do echo 'wait for master..'; sleep 1; done",
       # install k3s
