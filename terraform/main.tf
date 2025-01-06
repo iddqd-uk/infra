@@ -54,6 +54,8 @@ resource "hcloud_server" "kube-master-node" {
     runcmd = [
       # restart the SSH daemon to apply the new configuration
       "systemctl restart sshd",
+      # change the mount point for the volume with persistent data
+      "sed -i 's#/mnt/.*${local.volumes.master-node-id} #/mnt/persistent-volume #' /etc/fstab",
       # install cloud network auto-configuration package
       "curl -SsL https://packages.hetzner.com/hcloud/deb/hc-utils_0.0.6-1_all.deb -o /tmp/hc-utils.deb",
       "apt install -y /tmp/hc-utils.deb",

@@ -25,6 +25,7 @@ Before deploying the infrastructure, ensure the following resources are availabl
 
 - A public SSH key (its ID is required for `owner-key-id`)
 - Public IPv4 and IPv6 addresses (`primary-ips.ipv4-id` and `primary-ips.ipv6-id`)
+- A volume to mount to the master node (`volumes.master-node-id`)
 
 These resources are not managed by Terraform to prevent accidental deletion due to human error.
 
@@ -33,6 +34,9 @@ These resources are not managed by Terraform to prevent accidental deletion due 
 The following manual actions are required after the infrastructure is created:
 
 ```shell
-# Copy the kubeconfig file to the local machine to access the cluster
-scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ~/k3s.yaml
+# copy the kubeconfig file to the local machine to access the cluster
+scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ./k3s.yaml
+
+# replace the localhost address with the public IP address
+sed -i 's#https://127.0.0.1#https://78.47.216.176#g' ./k3s.yaml
 ```

@@ -40,6 +40,11 @@ EOT
     }
   }
 
+  volumes = {
+    # the ID of the "kube-master-node-volume-1" volume that is attached to the "kube-master-node" server
+    master-node-id = 101899154
+  }
+
   k3s = {
     # the version of k3s to install on the servers
     version = "v1.31.4+k3s1" // https://github.com/k3s-io/k3s/releases
