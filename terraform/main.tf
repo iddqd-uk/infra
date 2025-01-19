@@ -171,7 +171,7 @@ resource "hcloud_server" "kube-worker-nodes" {
         " INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
         " K3S_URL='https://${local.ips.master-node.private-ip}:6443'",
         " K3S_TOKEN='${var.K3S_TOKEN}'",
-        " sh -",
+        " sh -s - agent --node-ip '${each.value.private_ip}'",
       ]),
     ]
     power_state = {
