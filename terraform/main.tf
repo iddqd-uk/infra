@@ -67,7 +67,7 @@ resource "hcloud_server" "kube-master-node" {
         " K3S_TOKEN='${var.K3S_TOKEN}'",               # specify the token to use
         " INSTALL_K3S_SKIP_START=true",                # we will reboot the server after the installation
         " INSTALL_K3S_EXEC='--disable traefik'",
-        " sh -",
+        " sh -s - server --node-label='role=master' --node-ip='${local.ips.master-node.private-ip}'",
       ]),
     ]
     power_state = {
@@ -171,7 +171,7 @@ resource "hcloud_server" "kube-worker-nodes" {
         " INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
         " K3S_URL='https://${local.ips.master-node.private-ip}:6443'",
         " K3S_TOKEN='${var.K3S_TOKEN}'",
-        " sh -s - agent --node-ip '${each.value.private_ip}'",
+        " sh -s - agent --node-label='role=worker' --node-ip '${each.value.private_ip}'",
       ]),
     ]
     power_state = {
