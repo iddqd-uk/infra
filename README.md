@@ -35,8 +35,8 @@ The following manual actions are required after the infrastructure is created:
 
 ```shell
 # copy the kubeconfig file to the local machine to access the cluster
-scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ./k3s.yaml
+scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ~/.kube/iddqd
 
 # replace the localhost address with the public IP address
-sed -i 's#https://127.0.0.1#https://78.47.216.176#g' ./k3s.yaml
+sed -i 's#https://127.0.0.1#https://78.47.216.176#g' ~/.kube/iddqd
 ```
