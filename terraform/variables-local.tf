@@ -47,6 +47,6 @@ EOT
 
   k3s = {
     # the version of k3s to install on the servers
-    version = "v1.31.4+k3s1" // https://github.com/k3s-io/k3s/releases
+    version = "v1.32.0+k3s1" // https://github.com/k3s-io/k3s/releases
   }
 }
