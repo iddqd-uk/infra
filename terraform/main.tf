@@ -63,11 +63,16 @@ resource "hcloud_server" "kube-master-node" {
       # install k3s (https://docs.k3s.io/reference/env-variables)
       join(" ", [ # we need to start the k3s service after the installation to create the token
         "curl -sfL 'https://raw.githubusercontent.com/k3s-io/k3s/refs/tags/${local.k3s.version}/install.sh' | ",
-        " INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
-        " K3S_TOKEN='${var.K3S_TOKEN}'",               # specify the token to use
-        " INSTALL_K3S_SKIP_START=true",                # we will reboot the server after the installation
-        " INSTALL_K3S_EXEC='--disable traefik'",
-        " sh -s - server --node-label='role=master' --node-ip='${local.ips.master-node.private-ip}'",
+        "INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
+        "K3S_TOKEN='${var.K3S_TOKEN}'",               # specify the token to use
+        "INSTALL_K3S_SKIP_START=true",                # we will reboot the server after the installation
+        format("INSTALL_K3S_EXEC='%s'", join(" ", [
+          "--tls-san=kube.iddqd.uk",
+          "--node-label=role=master",
+          "--node-label=svccontroller.k3s.cattle.io/enablelb=true",
+          "--node-ip=${local.ips.master-node.private-ip}",
+        ])),
+        "sh -s -",
       ]),
     ]
     power_state = {
@@ -167,11 +172,15 @@ resource "hcloud_server" "kube-worker-nodes" {
       # install k3s
       join(" ", [
         "curl -sfL 'https://raw.githubusercontent.com/k3s-io/k3s/refs/tags/${local.k3s.version}/install.sh' | ",
-        " INSTALL_K3S_SKIP_START=true",                # we will reboot the server after the installation
-        " INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
-        " K3S_URL='https://${local.ips.master-node.private-ip}:6443'",
-        " K3S_TOKEN='${var.K3S_TOKEN}'",
-        " sh -s - agent --node-label='role=worker' --node-ip '${each.value.private_ip}'",
+        "INSTALL_K3S_SKIP_START=true",                # we will reboot the server after the installation
+        "INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
+        "K3S_URL='https://${local.ips.master-node.private-ip}:6443'",
+        "K3S_TOKEN='${var.K3S_TOKEN}'",
+        format("INSTALL_K3S_EXEC='%s'", join(" ", [
+          "--node-label=role=worker",
+          "--node-ip=${each.value.private_ip}",
+        ])),
+        "sh -s -",
       ]),
     ]
     power_state = {

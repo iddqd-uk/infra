@@ -38,5 +38,5 @@ The following manual actions are required after the infrastructure is created:
 scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ~/.kube/iddqd
 
 # replace the localhost address with the public IP address
-sed -i 's#https://127.0.0.1#https://78.47.216.176#g' ~/.kube/iddqd
+sed -i 's#https://127.0.0.1#https://kube.iddqd.uk#g' ~/.kube/iddqd
 ```
