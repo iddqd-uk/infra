@@ -42,6 +42,9 @@ resource "hcloud_server" "kube-master-node" {
         sudo                = ["ALL=(ALL) NOPASSWD:ALL"]
       }
     ]
+    bootcmd = [ # run commands before the rest of the cloud-init configuration
+      ["cloud-init-per", "once", "mkdir", "-m", "0700", "-p", "/var/lib/rancher/k3s/server/manifests"]
+    ]
     write_files = [
       { # customise SSH configuration
         path        = "/etc/ssh/sshd_config.d/cloudinit.conf"
@@ -49,6 +52,21 @@ resource "hcloud_server" "kube-master-node" {
         owner       = "root:root"
         encoding    = "base64"
         content     = base64encode(local.ssh.sshd-config)
+      },
+      { # mute coredns import warnings
+        path        = "/var/lib/rancher/k3s/server/manifests/coredns-config.yaml"
+        permissions = "0600"
+        owner       = "root:root"
+        encoding    = "base64"
+        content = base64encode(<<EOT
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: coredns-mute-import-warnings, namespace: kube-system}
+data: # https://github.com/coredns/coredns/issues/3600
+  empty.server: "# Empty server file to prevent import warnings"
+  empty.override: "# Empty override file to prevent import warnings"
+EOT
+        )
       }
     ]
     runcmd = [
@@ -67,9 +85,10 @@ resource "hcloud_server" "kube-master-node" {
         "K3S_TOKEN='${var.K3S_TOKEN}'",               # specify the token to use
         "INSTALL_K3S_SKIP_START=true",                # we will reboot the server after the installation
         format("INSTALL_K3S_EXEC='%s'", join(" ", [
+          "--disable=traefik", # disable the built-in Traefik
           "--tls-san=kube.iddqd.uk",
-          "--node-label=role=master",
-          "--node-label=svccontroller.k3s.cattle.io/enablelb=true",
+          "--node-label=node/role=master",
+          "--node-label=node/accept-external-traffic=true",
           "--node-ip=${local.ips.master-node.private-ip}",
         ])),
         "sh -s -",
@@ -177,7 +196,7 @@ resource "hcloud_server" "kube-worker-nodes" {
         "K3S_URL='https://${local.ips.master-node.private-ip}:6443'",
         "K3S_TOKEN='${var.K3S_TOKEN}'",
         format("INSTALL_K3S_EXEC='%s'", join(" ", [
-          "--node-label=role=worker",
+          "--node-label=node/role=worker",
           "--node-ip=${each.value.private_ip}",
         ])),
         "sh -s -",
