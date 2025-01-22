@@ -53,7 +53,7 @@ resource "hcloud_server" "kube-master-node" {
         encoding    = "base64"
         content     = base64encode(local.ssh.sshd-config)
       },
-      { # mute coredns import warnings
+      { # mute coredns import warnings (https://github.com/coredns/coredns/issues/3600)
         path        = "/var/lib/rancher/k3s/server/manifests/coredns-config.yaml"
         permissions = "0600"
         owner       = "root:root"
@@ -62,9 +62,11 @@ resource "hcloud_server" "kube-master-node" {
 apiVersion: v1
 kind: ConfigMap
 metadata: {name: coredns-mute-import-warnings, namespace: kube-system}
-data: # https://github.com/coredns/coredns/issues/3600
-  empty.server: "# Empty server file to prevent import warnings"
-  empty.override: "# Empty override file to prevent import warnings"
+data:
+  empty.server: |
+    # Empty server file to prevent import warnings
+  empty.override: |
+    # Empty override file to prevent import warnings
 EOT
         )
       }
