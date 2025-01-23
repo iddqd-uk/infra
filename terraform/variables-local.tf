@@ -9,25 +9,6 @@ locals {
     }
   }
 
-  ssh = {
-    # even if some key is set as a "default" in the Hetzner Cloud UI, we need to provide the ID of the key
-    # manually, because the API of the Hetzner Cloud ignores it
-    owner-key-id = 7408734 # kot@kotobook, made manually using the Hetzner Cloud UI
-
-    # customized SSH configuration for the servers (https://github.com/jtesta/ssh-audit)
-    sshd-config = <<EOT
-Port ${var.SSH_PORT}
-PermitRootLogin prohibit-password
-PasswordAuthentication no
-X11Forwarding no
-AllowAgentForwarding no
-HostKeyAlgorithms ${join(",", var.SSHD_HOST_KEY_ALGORITHMS)}
-KexAlgorithms ${join(",", var.SSHD_KEX_ALGORITHMS)}
-Ciphers ${join(",", var.SSHD_CIPHERS)}
-MACs ${join(",", var.SSHD_MACS)}
-EOT
-  }
-
   ips = {
     master-node = {
       private-ip = "10.0.1.254" # the private IP address of the "kube-master-node" server
@@ -49,4 +30,47 @@ EOT
     # the version of k3s to install on the servers
     version = "v1.32.0+k3s1" // https://github.com/k3s-io/k3s/releases
   }
+
+  ssh = {
+    # even if some key is set as a "default" in the Hetzner Cloud UI, we need to provide the ID of the key
+    # manually, because the API of the Hetzner Cloud ignores it
+    owner-key-id = 7408734 # kot@kotobook, made manually using the Hetzner Cloud UI
+
+    # customized SSH configuration for the servers (https://github.com/jtesta/ssh-audit)
+    sshd-config = <<EOT
+Port ${var.SSH_PORT}
+PermitRootLogin prohibit-password
+PasswordAuthentication no
+X11Forwarding no
+AllowAgentForwarding no
+HostKeyAlgorithms ${join(",", [
+    "ssh-ed25519-cert-v01@openssh.com",
+    "ssh-rsa-cert-v01@openssh.com",
+    "ssh-ed25519",
+    "rsa-sha2-256",
+    "rsa-sha2-512",
+    ])}
+KexAlgorithms ${join(",", [
+    "curve25519-sha256",
+    "curve25519-sha256@libssh.org",
+    "diffie-hellman-group18-sha512",
+    "diffie-hellman-group14-sha256",
+    "diffie-hellman-group16-sha512",
+    "diffie-hellman-group-exchange-sha256",
+    ])}
+Ciphers ${join(",", [
+    "chacha20-poly1305@openssh.com",
+    "aes256-gcm@openssh.com",
+    "aes128-gcm@openssh.com",
+    "aes256-ctr",
+    "aes192-ctr",
+    "aes128-ctr",
+    ])}
+MACs ${join(",", [
+    "hmac-sha2-512-etm@openssh.com",
+    "hmac-sha2-256-etm@openssh.com",
+    "umac-128-etm@openssh.com"
+])}
+EOT
+}
 }

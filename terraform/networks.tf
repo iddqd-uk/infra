@@ -7,6 +7,15 @@ resource "hcloud_network" "kube-network" {
   ip_range = "10.0.0.0/16"
 }
 
+# https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/primary_ip
+data "hcloud_primary_ip" "master-node-primary-ipv4" {
+  id = local.ips.master-node.primary-ips.ipv4-id
+}
+
+data "hcloud_primary_ip" "master-node-primary-ipv6" {
+  id = local.ips.master-node.primary-ips.ipv6-id
+}
+
 # https://registry.terraform.io/providers/hetznercloud/hcloud/latest/docs/resources/network_subnet
 resource "hcloud_network_subnet" "kube-network-subnet" {
   type         = "cloud"

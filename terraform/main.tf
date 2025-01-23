@@ -15,8 +15,8 @@ resource "hcloud_server" "kube-master-node" {
   shutdown_before_deletion = true
 
   public_net {
-    ipv4 = local.ips.master-node.primary-ips.ipv4-id
-    ipv6 = local.ips.master-node.primary-ips.ipv6-id
+    ipv4 = data.hcloud_primary_ip.master-node-primary-ipv4.id
+    ipv6 = data.hcloud_primary_ip.master-node-primary-ipv6.id
   }
 
   network {
@@ -33,16 +33,7 @@ resource "hcloud_server" "kube-master-node" {
     package_upgrade            = true               # upgrade packages
     package_reboot_if_required = true               # reboot if required
     packages                   = ["curl", "ntp"]    # install packages
-    users = [
-      { # create a user for the k3s cluster
-        name                = var.SSH_K3S_CLUSTER_USER
-        gecos               = "k3s cluster user"
-        shell               = "/bin/bash"
-        ssh_authorized_keys = [var.SSH_K3S_CLUSTER_KEY_PUB]
-        sudo                = ["ALL=(ALL) NOPASSWD:ALL"]
-      }
-    ]
-    bootcmd = [ # run commands before the rest of the cloud-init configuration
+    bootcmd = [                                     # run commands before the rest of the cloud-init configuration
       ["cloud-init-per", "once", "mkdir", "-m", "0700", "-p", "/var/lib/rancher/k3s/server/manifests"]
     ]
     write_files = [
@@ -92,6 +83,8 @@ EOT
           "--node-label=node/role=master",
           "--node-label=node/accept-external-traffic=true",
           "--node-ip=${local.ips.master-node.private-ip}",
+          "--advertise-address=${local.ips.master-node.private-ip}",
+          "--node-external-ip=${data.hcloud_primary_ip.master-node-primary-ipv4.ip_address}",
         ])),
         "sh -s -",
       ]),
@@ -163,15 +156,6 @@ resource "hcloud_server" "kube-worker-nodes" {
     package_upgrade            = true                           # upgrade packages
     package_reboot_if_required = true                           # reboot if required
     packages                   = ["curl", "ntp"]                # install packages
-    users = [
-      { # create a user for the k3s cluster
-        name                = var.SSH_K3S_CLUSTER_USER
-        gecos               = "k3s cluster user"
-        shell               = "/bin/bash"
-        ssh_authorized_keys = [var.SSH_K3S_CLUSTER_KEY_PUB]
-        sudo                = ["ALL=(ALL) NOPASSWD:ALL"]
-      }
-    ]
     write_files = [
       { # customise SSH configuration
         path        = "/etc/ssh/sshd_config.d/cloudinit.conf"
