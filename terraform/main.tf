@@ -71,13 +71,15 @@ EOT
       "curl -SsL https://packages.hetzner.com/hcloud/deb/hc-utils_0.0.6-1_all.deb -o /tmp/hc-utils.deb",
       "apt install -y /tmp/hc-utils.deb",
       "rm /tmp/hc-utils.deb",
+      # determine the private network interface for Flannel
+      "export PRIVATE_NET_IFACE=$(ip -o -4 addr show | awk '/10\\.0\\.1\\./ {print $2}')",
       # install k3s (https://docs.k3s.io/reference/env-variables)
       join(" ", [ # we need to start the k3s service after the installation to create the token
         "curl -sfL 'https://raw.githubusercontent.com/k3s-io/k3s/refs/tags/${local.k3s.version}/install.sh' | ",
         "INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
         "K3S_TOKEN='${var.K3S_TOKEN}'",               # specify the token to use
         "INSTALL_K3S_SKIP_START=true",                # we will reboot the server after the installation
-        format("INSTALL_K3S_EXEC='%s'", join(" ", [
+        format("INSTALL_K3S_EXEC=\"%s\"", join(" ", [
           "--disable=traefik", # disable the built-in Traefik
           "--tls-san=kube.iddqd.uk",
           "--node-label=node/role=master",
@@ -85,6 +87,7 @@ EOT
           "--node-ip=${local.ips.master-node.private-ip}",
           "--advertise-address=${local.ips.master-node.private-ip}",
           "--node-external-ip=${data.hcloud_primary_ip.master-node-primary-ipv4.ip_address}",
+          "--flannel-iface=$PRIVATE_NET_IFACE",
         ])),
         "sh -s -",
       ]),
@@ -174,6 +177,8 @@ resource "hcloud_server" "kube-worker-nodes" {
       "rm /tmp/hc-utils.deb",
       # wait for the master node to be ready
       "until curl -k 'https://${local.ips.master-node.private-ip}:6443'; do echo 'wait for master..'; sleep 1; done",
+      # determine the private network interface for Flannel
+      "export PRIVATE_NET_IFACE=$(ip -o -4 addr show | awk '/10\\.0\\.1\\./ {print $2}')",
       # install k3s
       join(" ", [
         "curl -sfL 'https://raw.githubusercontent.com/k3s-io/k3s/refs/tags/${local.k3s.version}/install.sh' | ",
@@ -181,9 +186,10 @@ resource "hcloud_server" "kube-worker-nodes" {
         "INSTALL_K3S_VERSION='${local.k3s.version}'", # specify the version to install
         "K3S_URL='https://${local.ips.master-node.private-ip}:6443'",
         "K3S_TOKEN='${var.K3S_TOKEN}'",
-        format("INSTALL_K3S_EXEC='%s'", join(" ", [
+        format("INSTALL_K3S_EXEC=\"%s\"", join(" ", [
           "--node-label=node/role=worker",
           "--node-ip=${each.value.private_ip}",
+          "--flannel-iface=$PRIVATE_NET_IFACE",
         ])),
         "sh -s -",
       ]),
