@@ -37,6 +37,9 @@ The following manual actions are required after the infrastructure is created:
 # copy the kubeconfig file to the local machine to access the cluster
 scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ~/.kube/iddqd
 
-# replace the localhost address with the public IP address
+# replace the localhost address with the public IP/domain of the master node
 sed -i 's#https://127.0.0.1#https://kube.iddqd.uk#g' ~/.kube/iddqd
+
+# update the kubeconfig secret in Doppler (required for future deployments)
+doppler --no-check-version secrets set --project iddqd-uk --config helm --type yaml KUBE_CONFIG < ~/.kube/iddqd
 ```
