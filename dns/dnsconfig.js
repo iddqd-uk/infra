@@ -52,7 +52,13 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   // google site verification
   TXT('@', 'google-site-verification=luYTKgKws2iyH4i2EMVeTvU6cLu3sslERAHtDqZ7G2U'),
 
+  // ------------------------------------------------------------------------------------------------------------------
+
   // kube.iddqd.uk
   A('kube', kubeIPv4, TTL(86400)),
   AAAA('kube', kubeIPv6, TTL(86400)),
+
+  // ww2.iddqd.uk (http(HTTP_PROXY_PORT)+tg(443) proxy)
+  A('ww2', kubeIPv4, TTL(86400)),
+  AAAA('ww2', kubeIPv6, TTL(86400)),
 );
