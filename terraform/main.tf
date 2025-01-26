@@ -90,6 +90,7 @@ EOT
           "--tls-san=kube.iddqd.uk",
           "--node-label=node/role=master",
           "--node-label=node/accept-external-traffic=true",
+          "--node-label=node/persistent-volume-mounted=true",
           "--node-ip=${local.ips.master-node.private-ip}",
           "--advertise-address=${local.ips.master-node.private-ip}",
           "--node-external-ip=${data.hcloud_primary_ip.master-node-primary-ipv4.ip_address}",
@@ -194,6 +195,7 @@ resource "hcloud_server" "kube-worker-nodes" {
         "K3S_TOKEN='${var.K3S_TOKEN}'",
         format("INSTALL_K3S_EXEC=\"%s\"", join(" ", [
           "--node-label=node/role=worker",
+          "--node-label=node/persistent-volume-mounted=true",
           "--node-ip=${each.value.private_ip}",
           "--flannel-iface=$PRIVATE_NET_IFACE",
         ])),
