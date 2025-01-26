@@ -27,13 +27,13 @@ resource "hcloud_server" "kube-master-node" {
   # https://cloudinit.readthedocs.io/en/latest/index.html
   # changing those values will NOT affect the server, as they are used only for the cloud-init configuration
   user_data = format("#cloud-config\n%s", yamlencode({
-    hostname                   = "kube-master-node" # set hostname
-    timezone                   = "UTC"              # set timezone
-    package_update             = true               # update package list
-    package_upgrade            = true               # upgrade packages
-    package_reboot_if_required = true               # reboot if required
-    packages                   = ["curl", "ntp"]    # install packages
-    bootcmd = [                                     # run commands before the rest of the cloud-init configuration
+    hostname                   = "kube-master-node"                   # set hostname
+    timezone                   = "UTC"                                # set timezone
+    package_update             = true                                 # update package list
+    package_upgrade            = true                                 # upgrade packages
+    package_reboot_if_required = true                                 # reboot if required
+    packages                   = ["curl", "ntp", "nfs-kernel-server"] # install packages
+    bootcmd = [
       ["cloud-init-per", "once", "mkdir", "-m", "0700", "-p", "/var/lib/rancher/k3s/server/manifests"]
     ]
     write_files = [
@@ -65,12 +65,18 @@ EOT
     runcmd = [
       # restart the SSH daemon to apply the new configuration
       "systemctl restart sshd",
-      # change the mount point for the volume with persistent data
-      "sed -i 's#/mnt/.*${local.volumes.master-node-id} #/mnt/persistent-volume #' /etc/fstab",
       # install cloud network auto-configuration package
       "curl -SsL https://packages.hetzner.com/hcloud/deb/hc-utils_0.0.6-1_all.deb -o /tmp/hc-utils.deb",
       "apt install -y /tmp/hc-utils.deb",
       "rm /tmp/hc-utils.deb",
+      # change the mount point for the volume with persistent data
+      "sed -i 's#/mnt/.*${local.volumes.master-node-id} #/mnt/persistent-volume #' /etc/fstab",
+      # prepare the nfs mount point for the volume with persistent data
+      "mkdir -p /mnt/persistent-volume",
+      "chown -R nobody:nogroup /mnt/persistent-volume",
+      "chmod 755 /mnt/persistent-volume",
+      "echo '/mnt/persistent-volume 10.0.1.0/24(rw,sync,no_subtree_check,no_root_squash)' >> /etc/exports",
+      "exportfs -a",
       # determine the private network interface for Flannel
       "export PRIVATE_NET_IFACE=$(ip -o -4 addr show | awk '/10\\.0\\.1\\./ {print $2}')",
       # install k3s (https://docs.k3s.io/reference/env-variables)
@@ -158,7 +164,7 @@ resource "hcloud_server" "kube-worker-nodes" {
     package_update             = true                           # update package list
     package_upgrade            = true                           # upgrade packages
     package_reboot_if_required = true                           # reboot if required
-    packages                   = ["curl", "ntp"]                # install packages
+    packages                   = ["curl", "ntp", "nfs-common"]  # install packages
     write_files = [
       { # customise SSH configuration
         path        = "/etc/ssh/sshd_config.d/cloudinit.conf"
@@ -193,6 +199,11 @@ resource "hcloud_server" "kube-worker-nodes" {
         ])),
         "sh -s -",
       ]),
+      # configure the NFS client (do it after the k3s installation to avoid issues with inaccessibility NFS server)
+      "mkdir -p /mnt/persistent-volume",
+      "chown -R nobody:nogroup /mnt/persistent-volume",
+      "chmod 755 /mnt/persistent-volume",
+      "echo '${local.ips.master-node.private-ip}:/mnt/persistent-volume /mnt/persistent-volume nfs defaults 0 0' >> /etc/fstab",
     ]
     power_state = {
       mode    = "reboot" # reboot once cloud-init is done

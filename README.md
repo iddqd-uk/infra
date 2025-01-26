@@ -33,6 +33,22 @@ These resources are not managed by Terraform to prevent accidental deletion due 
 
 The following manual actions are required after the infrastructure is created:
 
+> ![TIP]
+> To easily access the master node using SSH, you may want to add this lines to your `~/.ssh/config` file:
+> ```shell
+> Host iddqd-uk-master-node
+>   HostName kube.iddqd.uk
+>   Port <ssh-port>
+>   User root
+> ```
+
+> ![NOTE]
+> First, please ensure that the K8s cluster is up and running before proceeding with the following steps:
+> ```shell
+> # you should see the master and worker nodes
+> ssh iddqd-uk-master-node kubectl get nodes
+> ```
+
 ```shell
 # copy the kubeconfig file to the local machine to access the cluster
 scp iddqd-uk-master-node:/etc/rancher/k3s/k3s.yaml ~/.kube/iddqd
