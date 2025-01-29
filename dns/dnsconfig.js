@@ -12,23 +12,15 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   A('www', '192.0.2.1', CF_PROXY_ON),
   AAAA('www', '100::', CF_PROXY_ON),
 
-  // consul.iddqd.uk
-  A('consul', legacyIPv4, CF_PROXY_ON),
-  AAAA('consul', legacyIPv6, CF_PROXY_ON),
+  // kube.iddqd.uk
+  A('kube', kubeIPv4, TTL(86400)),
+  AAAA('kube', kubeIPv6, TTL(86400)),
 
-  // nomad.iddqd.uk
-  A('nomad', legacyIPv4, CF_PROXY_ON),
-  AAAA('nomad', legacyIPv6, CF_PROXY_ON),
+  // ww2.iddqd.uk (http(HTTP_PROXY_PORT)+tg(443) proxy)
+  A('ww2', kubeIPv4, TTL(86400)),
+  AAAA('ww2', kubeIPv6, TTL(86400)),
 
-  // proxy.iddqd.uk
-  A('proxy', legacyIPv4, CF_PROXY_ON),
-  AAAA('proxy', legacyIPv6, CF_PROXY_ON),
-
-  // traefik.iddqd.uk
-  A('traefik', legacyIPv4, CF_PROXY_ON),
-  AAAA('traefik', legacyIPv6, CF_PROXY_ON),
-
-  // ww1.iddqd.uk (http(2080)+tg(443) proxy)
+  // ww1.iddqd.uk (http(2080)+tg(443) proxy) // TODO: remove
   A('ww1', legacyIPv4, TTL(86400)),
   AAAA('ww1', legacyIPv6, TTL(86400)),
 
@@ -48,17 +40,4 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   MX('@', 60, 'route2.mx.cloudflare.net.'),
   MX('@', 100, 'route1.mx.cloudflare.net.'),
   TXT('@', 'v=spf1 include:_spf.mx.cloudflare.net ~all'),
-
-  // google site verification
-  TXT('@', 'google-site-verification=luYTKgKws2iyH4i2EMVeTvU6cLu3sslERAHtDqZ7G2U'),
-
-  // ------------------------------------------------------------------------------------------------------------------
-
-  // kube.iddqd.uk
-  A('kube', kubeIPv4, TTL(86400)),
-  AAAA('kube', kubeIPv6, TTL(86400)),
-
-  // ww2.iddqd.uk (http(HTTP_PROXY_PORT)+tg(443) proxy)
-  A('ww2', kubeIPv4, TTL(86400)),
-  AAAA('ww2', kubeIPv6, TTL(86400)),
 );
