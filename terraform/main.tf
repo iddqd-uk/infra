@@ -52,7 +52,7 @@ resource "hcloud_server" "kube-master-node" {
         content = base64encode(<<EOT
 apiVersion: v1
 kind: ConfigMap
-metadata: {name: coredns-mute-import-warnings, namespace: kube-system}
+metadata: {name: coredns-custom, namespace: kube-system}
 data:
   empty.server: |
     # Empty server file to prevent import warnings
