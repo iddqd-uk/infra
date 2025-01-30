@@ -37,11 +37,16 @@ jobs:
     name: Validate Terraform configuration
     runs-on: ubuntu-latest
     defaults: {run: {working-directory: ./terraform}}
+    env: {TF_CLI_CONFIG_FILE: ./.terraformrc}
     steps:
       - uses: actions/checkout@v4
+      - uses: dopplerhq/cli-action@v3
       - uses: hashicorp/setup-terraform@v3
+      - run: doppler secrets substitute ./../.terraformrc.doppler.tf > $TF_CLI_CONFIG_FILE
+        with: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: terraform init
       - run: terraform validate
+      - {name: Cleanup, when: always(), run: rm -f $TF_CLI_CONFIG_FILE}
 
   build-docker-image:
     name: Build the docker image that is used for local infrastructure management
