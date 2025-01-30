@@ -41,5 +41,6 @@ RUN set -x \
     && wget -q -O /tmp/terraform.zip \
       "${BASE_URL}/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${TERRAFORM_ARCH}.zip" \
     && unzip -q /tmp/terraform.zip -d /usr/local/bin \
+    && rm -f /tmp/terraform.zip \
     && chmod +x /usr/local/bin/terraform \
     && terraform version
