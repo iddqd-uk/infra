@@ -1,0 +1,7 @@
+{
+  "cloudflare": {
+    "TYPE": "CLOUDFLAREAPI",
+    "accountid": "{{ .DNSCONTROL_CLOUDFLARE_ACCOUNT_ID }}",
+    "apitoken": "{{ .DNSCONTROL_CLOUDFLARE_API_TOKEN }}"
+  }
+}

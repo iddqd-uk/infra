@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://cdn.jsdelivr.net/gh/compose-spec/compose-spec@master/schema/compose-spec.json
+
+name: iddqd-infra
+
+services:
+  shell:
+    build: {dockerfile: Dockerfile}
+    env_file: [{path: .env, required: false}]
+    volumes: [.:/src:rw, tmp-data:/tmp:rw]
+    working_dir: /src
+    environment:
+      HOME: /tmp
+      DOPPLER_ENABLE_VERSION_CHECK: 'false'
+      TF_CLI_CONFIG_FILE: /src/.terraformrc
+
+volumes:
+  tmp-data: {}
