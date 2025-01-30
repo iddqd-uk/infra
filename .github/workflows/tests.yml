@@ -43,7 +43,7 @@ jobs:
       - uses: dopplerhq/cli-action@v3
       - uses: hashicorp/setup-terraform@v3
       - run: doppler secrets substitute ./../.terraformrc.doppler.tf > $TF_CLI_CONFIG_FILE
-        with: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
+        env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: terraform init
       - run: terraform validate
       - {name: Cleanup, when: always(), run: rm -f $TF_CLI_CONFIG_FILE}
