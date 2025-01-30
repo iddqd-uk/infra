@@ -42,7 +42,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dopplerhq/cli-action@v3
       - uses: hashicorp/setup-terraform@v3
-      - run: doppler secrets substitute ./../.terraformrc.doppler.tf > $TF_CLI_CONFIG_FILE
+      - name: Authorize Terraform
+        run: doppler secrets substitute ./../.terraformrc.doppler.tf > $TF_CLI_CONFIG_FILE
         env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: terraform init
       - run: terraform validate
