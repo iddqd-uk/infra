@@ -1,16 +1,5 @@
 # Terraform Cloud UI to manage variables: https://app.terraform.io/app/iddqd-uk/workspaces/infra/variables
 
-variable "HCLOUD_TOKEN" {
-  description = "Hetzner Cloud API token"
-  type        = string
-  sensitive   = true
-
-  validation {
-    condition     = length(var.HCLOUD_TOKEN) == 64
-    error_message = "Please provide a valid Hetzner Cloud API token"
-  }
-}
-
 variable "HTTP_PROXY_PORT" {
   description = "HTTP proxy port"
   type        = number

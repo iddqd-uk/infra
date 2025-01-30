@@ -37,9 +37,29 @@ jobs:
     name: Validate Terraform configuration
     runs-on: ubuntu-latest
     defaults: {run: {working-directory: ./terraform}}
+    env: {TF_CLI_CONFIG_FILE: ./.terraformrc}
     steps:
       - uses: actions/checkout@v4
+      - uses: dopplerhq/cli-action@v3
       - uses: hashicorp/setup-terraform@v3
-        with: {cli_config_credentials_token: "${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}" }
+      - name: Authorize Terraform
+        run: doppler secrets substitute ./../.terraformrc.doppler.tf > $TF_CLI_CONFIG_FILE
+        env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: terraform init
       - run: terraform validate
+      - {name: Cleanup, if: always(), run: rm -f $TF_CLI_CONFIG_FILE}
+
+  build-docker-image:
+    name: Build the docker image that is used for local infrastructure management
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: env:local

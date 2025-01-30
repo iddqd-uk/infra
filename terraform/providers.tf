@@ -20,5 +20,5 @@ terraform {
 }
 
 provider "hcloud" {
-  token = var.HCLOUD_TOKEN
+  token = var.hetzner_cloud_api_token
 }

@@ -25,9 +25,10 @@ jobs:
     defaults: {run: {working-directory: ./dns}}
     steps:
       - uses: actions/checkout@v4
+      - uses: dopplerhq/cli-action@v3
       - uses: gacts/install-dnscontrol@v1
-      - run: echo '{"cloudflare":{"TYPE":"CLOUDFLAREAPI","accountid":"$CF_ID","apitoken":"$CF_TOKEN"}}' > ./creds.json
+      - name: Authorize DnsControl
+        run: doppler secrets substitute ./creds.doppler.json > ./creds.json
+        env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: dnscontrol ${{ inputs.action }}
-        env:
-          CF_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CF_TOKEN: ${{ secrets.CF_DNS_API_KEY }}
+      - {name: Cleanup, if: always(), run: rm -f ./creds.json}

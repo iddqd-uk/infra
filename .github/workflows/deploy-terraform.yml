@@ -23,10 +23,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: Terraform
     defaults: {run: {working-directory: ./terraform}}
+    env: {TF_CLI_CONFIG_FILE: ./.terraformrc}
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
-        with: {cli_config_credentials_token: "${{ secrets.TERRAFORM_CLOUD_API_TOKEN }}" }
+      - name: Authorize Terraform
+        run: doppler secrets substitute ./../.terraformrc.doppler.tf > $TF_CLI_CONFIG_FILE
+        env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: terraform init
       - run: terraform ${{ inputs.action }}
         env: {TF_IN_AUTOMATION: on}
+      - {name: Cleanup, if: always(), run: rm -f $TF_CLI_CONFIG_FILE}

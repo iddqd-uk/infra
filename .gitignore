@@ -2,6 +2,13 @@
 /.idea
 /.vscode
 
+## Secrets
+/.terraformrc
+/dns/creds.json
+
+## Dotenv
+/.env
+
 ## Temp dirs & trash
 /temp
 /tmp
