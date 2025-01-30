@@ -26,11 +26,12 @@ jobs:
     env: {TF_CLI_CONFIG_FILE: ./.terraformrc}
     steps:
       - uses: actions/checkout@v4
+      - uses: dopplerhq/cli-action@v3
       - uses: hashicorp/setup-terraform@v3
       - name: Authorize Terraform
         run: doppler secrets substitute ./../.terraformrc.doppler.tf > $TF_CLI_CONFIG_FILE
         env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: terraform init
-      - run: terraform ${{ inputs.action }}
-        env: {TF_IN_AUTOMATION: on}
+      - run: doppler run --name-transformer tf-var -- terraform ${{ inputs.action }}
+        env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}", TF_IN_AUTOMATION: on}
       - {name: Cleanup, if: always(), run: rm -f $TF_CLI_CONFIG_FILE}
