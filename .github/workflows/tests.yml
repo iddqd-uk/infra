@@ -46,7 +46,7 @@ jobs:
         env: {DOPPLER_TOKEN: "${{ secrets.DOPPLER_SERVICE_TOKEN }}"}
       - run: terraform init
       - run: terraform validate
-      - {name: Cleanup, when: always(), run: rm -f $TF_CLI_CONFIG_FILE}
+      - {name: Cleanup, if: always(), run: rm -f $TF_CLI_CONFIG_FILE}
 
   build-docker-image:
     name: Build the docker image that is used for local infrastructure management
