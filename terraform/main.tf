@@ -205,7 +205,8 @@ resource "hcloud_server" "kube-worker-nodes" {
       "mkdir -p /mnt/persistent-volume",
       "chown -R nobody:nogroup /mnt/persistent-volume",
       "chmod 755 /mnt/persistent-volume",
-      "echo '${local.ips.master-node.private-ip}:/mnt/persistent-volume /mnt/persistent-volume nfs defaults 0 0' >> /etc/fstab",
+      "echo '${local.ips.master-node.private-ip}:/mnt/persistent-volume /mnt/persistent-volume nfs x-systemd.automount,_netdev 0 0' >> /etc/fstab",
+      "systemctl daemon-reload",
     ]
     power_state = {
       mode    = "reboot" # reboot once cloud-init is done
