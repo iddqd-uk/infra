@@ -23,6 +23,10 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   A('wh', IPv4, CF_PROXY_ON),
   AAAA('wh', IPv6, CF_PROXY_ON),
 
+  // home.iddqd.uk
+  A('home', IPv4, CF_PROXY_ON),
+  AAAA('home', IPv6, CF_PROXY_ON),
+
   // blog.iddqd.uk (github pages)
   CNAME('blog', 'tarampampam.github.io.', CF_PROXY_ON),
 
