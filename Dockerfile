@@ -30,7 +30,7 @@ RUN set -x \
 # install terraform (https://www.terraform.io/)
 RUN set -x \
     # renovate: source=github-releases name=hashicorp/terraform
-    && TERRAFORM_VERSION="1.10.5" \
+    && TERRAFORM_VERSION="1.11.0" \
     && APK_ARCH="$(apk --print-arch)" \
     && case "${APK_ARCH}" in \
         x86_64) TERRAFORM_ARCH="amd64" ;; \
