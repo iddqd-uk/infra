@@ -3,5 +3,6 @@
   "extends": [
     "github>iddqd-uk/.github//renovate/default",
     ":rebaseStalePrs"
-  ]
+  ],
+  "schedule": ["monthly"]
 }
