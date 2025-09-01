@@ -24,7 +24,7 @@ jobs:
     environment: DNS
     defaults: {run: {working-directory: ./dns}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dopplerhq/cli-action@v3
       - uses: gacts/install-dnscontrol@v1
       - name: Authorize DnsControl

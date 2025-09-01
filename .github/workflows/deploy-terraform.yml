@@ -25,7 +25,7 @@ jobs:
     defaults: {run: {working-directory: ./terraform}}
     env: {TF_CLI_CONFIG_FILE: ./.terraformrc}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dopplerhq/cli-action@v3
       - uses: hashicorp/setup-terraform@v3
       - name: Authorize Terraform
