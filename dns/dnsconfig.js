@@ -16,8 +16,8 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   AAAA('kube', IPv6, TTL(86400)),
 
   // call.iddqd.uk
-  A('call', IPv4, TTL(86400)),
-  AAAA('call', IPv6, TTL(86400)),
+  A('call', IPv4, TTL(86400), CF_PROXY_ON),
+  AAAA('call', IPv6, TTL(86400), CF_PROXY_ON),
 
   // ww2.iddqd.uk (http(HTTP_PROXY_PORT)+tg(443) proxy)
   A('ww2', IPv4, TTL(86400)),
@@ -42,9 +42,7 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   A('*.local', '127.0.0.1', TTL(86400)),
   AAAA('*.local', '::1', TTL(86400)),
 
-  // email routing (cloudflare)
-  MX('@', 1, 'route3.mx.cloudflare.net.'),
-  MX('@', 60, 'route2.mx.cloudflare.net.'),
-  MX('@', 100, 'route1.mx.cloudflare.net.'),
-  TXT('@', 'v=spf1 include:_spf.mx.cloudflare.net ~all'),
+  // Tell DNSControl not to touch Email Routing records at the apex
+  IGNORE_NAME('@', 'MX'), // ignore all MX at @
+  IGNORE('@', 'TXT', 'v=spf1*'), // ignore CF’s SPF TXT at @
 );
