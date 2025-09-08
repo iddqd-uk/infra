@@ -15,6 +15,10 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   A('kube', IPv4, TTL(86400)),
   AAAA('kube', IPv6, TTL(86400)),
 
+  // call.iddqd.uk
+  A('call', IPv4, TTL(86400)),
+  AAAA('call', IPv6, TTL(86400)),
+
   // ww2.iddqd.uk (http(HTTP_PROXY_PORT)+tg(443) proxy)
   A('ww2', IPv4, TTL(86400)),
   AAAA('ww2', IPv6, TTL(86400)),
