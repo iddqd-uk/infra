@@ -15,10 +15,6 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   A('kube', IPv4, TTL(86400)),
   AAAA('kube', IPv6, TTL(86400)),
 
-  // call.iddqd.uk
-  A('call', IPv4, TTL(86400), CF_PROXY_ON),
-  AAAA('call', IPv6, TTL(86400), CF_PROXY_ON),
-
   // ww2.iddqd.uk (http(HTTP_PROXY_PORT)+tg(443) proxy)
   A('ww2', IPv4, TTL(86400)),
   AAAA('ww2', IPv6, TTL(86400)),
@@ -26,10 +22,6 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
   // wh.iddqd.uk
   A('wh', IPv4, CF_PROXY_ON),
   AAAA('wh', IPv6, CF_PROXY_ON),
-
-  // home.iddqd.uk
-  A('home', IPv4, CF_PROXY_ON),
-  AAAA('home', IPv6, CF_PROXY_ON),
 
   // blog.iddqd.uk (github pages)
   CNAME('blog', 'tarampampam.github.io.', CF_PROXY_ON),
