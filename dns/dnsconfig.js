@@ -36,6 +36,6 @@ D('iddqd.uk', NewRegistrar('none'), DnsProvider(NewDnsProvider('cloudflare')), D
 
   // Tell DNSControl not to touch Email Routing records at the apex
   IGNORE_NAME('@', 'MX'),
-  IGNORE('@', 'TXT', 'v=spf1*'),
+  IGNORE('@', 'TXT', '*v=spf1*'),
   IGNORE("*._domainkey", "TXT"),
 );
