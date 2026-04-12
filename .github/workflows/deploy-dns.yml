@@ -25,7 +25,7 @@ jobs:
     defaults: {run: {working-directory: ./dns}}
     steps:
       - uses: actions/checkout@v6
-      - uses: dopplerhq/cli-action@v3
+      - uses: dopplerhq/cli-action@v4
       - uses: gacts/install-dnscontrol@v1
       - name: Authorize DnsControl
         run: doppler secrets substitute ./creds.doppler.json > ./creds.json
