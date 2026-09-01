@@ -5,7 +5,7 @@ resource "hcloud_server" "kube-master-node" {
   name        = "kube-master-node"
   image       = "debian-12"
   server_type = "cx32"
-  datacenter  = "nbg1-dc3" # hel1-dc2 (Helsinki) | fsn1-dc14 (Falkenstein) | ash-dc1 (Ashburn) | hil-dc1 (Hillsboro)
+  location    = "nbg1" # Nuremberg
 
   ssh_keys           = [local.ssh.owner-key-id]
   placement_group_id = hcloud_placement_group.kube-placement-group.id
@@ -138,7 +138,7 @@ resource "hcloud_server" "kube-worker-nodes" {
   name        = "kube-worker-node-${each.key}"
   image       = "debian-12"
   server_type = each.value.server_type
-  datacenter  = "nbg1-dc3"
+  location    = "nbg1"
 
   ssh_keys           = [local.ssh.owner-key-id]
   placement_group_id = hcloud_placement_group.kube-placement-group.id
